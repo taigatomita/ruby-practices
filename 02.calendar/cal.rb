@@ -24,4 +24,4 @@ beginning_of_the_month.wday.times{print ("\s\s\s")}
     print "\s"
   end
 end
-print "\n
+print "\n"
