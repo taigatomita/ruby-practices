@@ -12,44 +12,27 @@ scores.each do |s|
   end
 end
 
-frames = [] # フレームごとに分割
-shots.each_slice(2) do |g|
-  frames << g
-end
-if frames[11] # 10フレームに合わせる
-  frames[9] += frames[10]
-  frames.delete_at(10)
-  frames[9] += frames[10]
-  frames.delete_at(10)
-elsif frames[10]
-  frames[9] += frames[10]
-  frames.delete_at(10)
-else
-  frames
+frames = shots.each_slice(2).to_a # フレームごとに分割
+
+frames.each_with_index do |f, i| # 10フレームに合わせる
+  frames[9] += f if i > 9
 end
 
-frames.each do |frame| # ストライク後の0を消す
-  frame.delete_at(1) if frame[0] == 10
-end
+frames.delete_if.with_index { |_frm, idx| idx > 9 }
+
+frames.each { |f| f.delete(0) } # 0を消す
 
 point = 0
 frames.each_with_index do |frame, idx| # スコアを加算していく
-  if idx == 9
-    point += frame.sum
-  elsif idx == 8 && frame[0] == 10
-    point += frame.sum + frames[9][0] + frames[9][1]
-  elsif idx == 8 && frame.sum == 10
-    point += frame.sum + frames[9][0]
-  elsif frame[0] == 10 # ストライク
-    point = if frames[idx + 1][0] == 10
-              point + frame.sum + frames[idx + 1][0] + frames[idx + 2][0]
+  point += frame.sum
+  if frame[0] == 10 # ストライクの場合
+    point = if frames[idx + 1]&.first.to_i == 10
+              point + frames[idx + 1]&.first.to_i + frames[idx + 1][1].to_i + frames[idx + 2]&.first.to_i
             else
-              point + frame.sum + frames[idx + 1].sum
+              point + frames[idx + 1]&.sum.to_i
             end
-  elsif frame.sum == 10
-    point += frame.sum + frames[idx + 1][0]
-  else
-    point += frame.sum
+  elsif frame.sum == 10 # スペアの場合
+    point += frames[idx + 1]&.first.to_i
   end
 end
 p point
