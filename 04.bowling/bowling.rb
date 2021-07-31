@@ -14,27 +14,17 @@ end
 
 frames = shots.each_slice(2).to_a # フレームごとに分割
 
-frames.each_with_index do |f, i| # 最終フレーム処理の準備
-  next if i < 9
-
-  f.delete(0)
-
-  next unless i == 11
-
-  frames[10] += f
-end
-frames.delete_if.with_index { |_frm, idx| idx > 10 }
+last_shots = frames.slice!(9..).flatten.reject { |s| s.zero? } # 最終フレームの為の処理
+frames << last_shots
 
 point = 0
 frames.each_with_index do |frame, idx| # スコアを加算していく
-  next if idx == 10
-
   point += frame.sum
   if frame[0] == 10 # ストライクの場合
     point = if frames[idx + 1]&.first.to_i == 10
-              point + frames[idx + 1]&.sum.to_i + frames[idx + 2]&.first.to_i
+              point + frames[idx + 1][0..1].sum.to_i + frames[idx + 2]&.first.to_i
             else
-              point + frames[idx + 1]&.sum.to_i
+              frames[idx + 1] ? point + frames[idx + 1][0..1].sum : point
             end
   elsif frame.sum == 10 # スペアの場合
     point += frames[idx + 1]&.first.to_i
