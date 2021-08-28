@@ -4,7 +4,7 @@ require 'optparse'
 
 def main
   params = ARGV.getopts('l')
-  total = Hash.new(0)
+  total_stat = Hash.new(0)
 
   if ARGV.empty?
     stat = word_count($stdin.read)
@@ -14,40 +14,33 @@ def main
       file = File.open(name)
       stat = word_count(file.read)
       show(stat, name, params['l'])
-      total_count(total, stat)
+      total_stat.merge!(stat) { |_key, total_val, val| total_val + val }
       file.close
     end
-    show_total(total, params['l']) if ARGV.size >= 2
+    show_total(total_stat, params['l']) if ARGV.size >= 2
   end
 end
 
 def word_count(str)
-  state = {}
-  state[:number_of_lines] = str.count("\n")
-  state[:number_of_words] = str.split(/\s+/).size
-  state[:number_of_bytes] = str.bytesize
-  state
+  {
+    number_of_lines: str.count("\n"),
+    number_of_words: str.split(/\s+/).size,
+    number_of_bytes: str.bytesize
+  }
 end
 
-def show(state, file_name, params)
-  print "#{adjusting(state, params)} #{file_name}\n"
+def show(state, file_name, only_lines)
+  puts " #{adjusting(state, only_lines)} #{file_name}"
 end
 
-def total_count(total, stat)
-  total.merge!(stat) { |_key, total_val, val| total_val + val }
+def show_total(total_state, only_lines)
+  puts " #{adjusting(total_state, only_lines)} total"
 end
 
-def show_total(total_result, params)
-  print "#{adjusting(total_result, params)} total\n"
-end
+def adjusting(status, only_lines)
+  return status.values.first.to_s.rjust(7) if only_lines
 
-def adjusting(has, param)
-  results = ''
-  has.each_value do |val|
-    results += " #{val.to_s.rjust(7)}"
-    break if param
-  end
-  results
+  status.values.map { |val| val.to_s.rjust(7) }.join(' ')
 end
 
 main
