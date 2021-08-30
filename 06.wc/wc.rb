@@ -11,11 +11,11 @@ def main
     show(stat, '', params['l']) # ArgumentError,NoMethodErrorを避けるために空文字列を引数とする
   else
     ARGV.each do |name|
-      file = File.open(name)
-      stat = word_count(file.read)
-      show(stat, name, params['l'])
-      total_stat.merge!(stat) { |_key, total_val, val| total_val + val }
-      file.close
+      File.open(name) do |file|
+        stat = word_count(file.read)
+        show(stat, name, params['l'])
+        total_stat.merge!(stat) { |_key, total_val, val| total_val + val }
+      end
     end
     show_total(total_stat, params['l']) if ARGV.size >= 2
   end
