@@ -7,8 +7,8 @@ class Frame
 
   def initialize(marks)
     @first_shot = Shot.new(marks[0])
-    @second_shot = marks[1] ? Shot.new(marks[1]) : Shot.new(0)
-    @third_mark = marks[2] ? Shot.new(marks[2]) : Shot.new(0)
+    @second_shot = Shot.new(marks[1]) || Shot.new(0)
+    @third_mark = Shot.new(marks[2]) || Shot.new(0)
   end
 
   def strike?

@@ -46,7 +46,7 @@ class Game
       if frame.strike?
         point += strike_score_calculation(frames, idx)
       elsif frame.spare?
-        point += frames[idx + 1].first_shot.score.to_i
+        point += frames[idx + 1].first_shot.score
       end
     end
     point
