@@ -7,8 +7,8 @@ class Frame
 
   def initialize(marks)
     @first_shot = Shot.new(marks[0])
-    @second_shot = Shot.new(marks[1]) || Shot.new(0)
-    @third_mark = Shot.new(marks[2]) || Shot.new(0)
+    @second_shot = Shot.new(marks[1])
+    @third_shot = Shot.new(marks[2])
   end
 
   def strike?
@@ -16,14 +16,14 @@ class Frame
   end
 
   def spare?
-    !strike? && total_of_2_throws == 10
+    !strike? && sum_first_two_scores == 10
   end
 
   def sum_scores
-    [@first_shot.score, @second_shot.score, @third_mark.score].sum
+    [@first_shot, @second_shot, @third_shot].sum(&:score)
   end
 
-  def total_of_2_throws
-    [@first_shot.score, @second_shot.score].sum
+  def sum_first_two_scores
+    [@first_shot, @second_shot].sum(&:score)
   end
 end

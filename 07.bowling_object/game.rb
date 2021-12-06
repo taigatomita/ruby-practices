@@ -1,50 +1,43 @@
 # frozen_string_literal: true
 
 require_relative 'frame'
-require_relative 'shot'
 
 class Game
-  def initialize(argv)
-    @scores = argv
+  def initialize(score_text)
+    @score_text = score_text
   end
 
   def main
-    array_of_scores = insert_0_after_x(@scores.split(','))
-    devided_scores = slice_into_frames(array_of_scores)
-    frames = adjusting_the_final_frame(devided_scores).map { |f| Frame.new(f) }
-    p score_calculation(frames)
+    scores = @score_text.split(',').flat_map { |s| s == 'X' ? [s, '0'] : s }
+    divided_scores = scores.each_slice(2).to_a
+    p divided_scores
+    frames = adjust_final_frame(divided_scores).map { |scores| Frame.new(scores) }
+    p divided_scores
+    p calculate_score(frames)
   end
 
-  def insert_0_after_x(scores)
-    shots = []
-    scores.each { |s| s == 'X' ? shots.push(s, '0') : shots.push(s) }
-    shots
-  end
+  private
 
-  def adjusting_the_final_frame(scores)
-    last_shots = scores.slice!(9..).flatten.reject { |s| s == '0' }
+  def adjust_final_frame(scores)
+    last_shots = scores.slice(9..).flatten.reject { |s| s == '0' }
     scores << last_shots
     scores
   end
 
-  def slice_into_frames(array_of_socres)
-    array_of_socres.each_slice(2).to_a
-  end
-
-  def strike_score_calculation(frames, idx)
-    point = frames[idx + 1].total_of_2_throws
+  def calculate_strike_score(frames, idx)
+    point = frames[idx + 1].sum_first_two_scores
     point += frames[idx + 2].first_shot.score if frames[idx + 1].strike? && frames[idx + 2]
     point
   end
 
-  def score_calculation(frames)
+  def calculate_score(frames)
     point = 0
     frames.each_with_index do |frame, idx|
       point += frame.sum_scores
-      next unless frames[idx + 1]
+      break if idx == 9
 
       if frame.strike?
-        point += strike_score_calculation(frames, idx)
+        point += calculate_strike_score(frames, idx)
       elsif frame.spare?
         point += frames[idx + 1].first_shot.score
       end
