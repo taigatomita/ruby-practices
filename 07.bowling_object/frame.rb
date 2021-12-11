@@ -1,29 +1,27 @@
 # frozen_string_literal: true
 
-require_relative 'shot'
-
 class Frame
-  attr_reader :first_shot
-
   def initialize(shots)
-    @first_shot = shots[0]
-    @second_shot = shots[1] || 0
-    @third_shot = shots[2] || 0
+    @shots = shots
+  end
+
+  def first_shot
+    @shots.first
   end
 
   def strike?
-    @first_shot == 10
+    first_shot.strike?
   end
 
   def spare?
-    !strike? && sum_first_two_scores == 10
+    !strike? && sum_first_two_shots == 10
   end
 
-  def sum_scores
-    [@first_shot, @second_shot, @third_shot].sum
+  def sum_shots
+    @shots.compact.sum(&:score)
   end
 
-  def sum_first_two_scores
-    [@first_shot, @second_shot].sum
+  def sum_first_two_shots
+    @shots.first(2).compact.sum(&:score)
   end
 end
