@@ -27,7 +27,7 @@ class Game
 
   def calculate_strike_score(frames, idx)
     point = frames[idx + 1].sum_first_two_shots
-    point += frames[idx + 2].first_shot.score if frames[idx + 1].strike? && frames[idx + 2]
+    point += frames[idx + 2].first_shot if frames[idx + 1].strike? && frames[idx + 2]
     point
   end
 
@@ -40,7 +40,7 @@ class Game
       if frame.strike?
         point += calculate_strike_score(frames, idx)
       elsif frame.spare?
-        point += frames[idx + 1].first_shot.score
+        point += frames[idx + 1].first_shot
       end
     end
     point
