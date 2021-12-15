@@ -6,22 +6,22 @@ class Frame
   end
 
   def first_shot
-    @shots.first.score
+    @shots[0]
   end
 
   def strike?
-    first_shot == 10
+    first_shot.strike?
   end
 
   def spare?
-    !strike? && sum_first_two_shots == 10
+    !strike? && sum_first_two_scores == 10
   end
 
-  def sum_shots
+  def sum_scores
     @shots.compact.sum(&:score)
   end
 
-  def sum_first_two_shots
-    @shots.first(2).compact.sum(&:score)
+  def sum_first_two_scores
+    @shots[0..1].compact.sum(&:score)
   end
 end
