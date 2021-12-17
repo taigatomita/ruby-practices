@@ -30,19 +30,22 @@ class Game
     point
   end
 
-  def calculate_score(frames)
-    point = 0
-    frames.each_with_index do |frame, idx|
-      point += frame.sum_scores
-      break if idx == 9
-
-      if frame.strike?
-        point += calculate_strike_score(frames, idx)
-      elsif frame.spare?
-        point += frames[idx + 1].first_shot.score
-      end
+  def calculate_bonus(frames, idx)
+    if frames[idx].strike?
+      calculate_strike_score(frames, idx)
+    elsif frames[idx].spare?
+      frames[idx + 1].first_shot.score
+    else
+      0
     end
-    point
+  end
+
+  def calculate_score(frames)
+    frames.each_with_index.sum do |frame, idx|
+      point = frame.sum_scores
+      point += calculate_bonus(frames, idx) unless idx == 9
+      point
+    end
   end
 end
 
