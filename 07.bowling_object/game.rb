@@ -8,7 +8,7 @@ class Game
     @score_text = score_text
   end
 
-  def main
+  def calculate_result_score
     shots = @score_text.split(',').map { |mark| Shot.new(mark) }
     shots = shots.flat_map { |s| s.strike? ? [s, nil] : s }
     divided_shots = shots.each_slice(2).to_a
@@ -31,6 +31,7 @@ class Game
   end
 
   def calculate_bonus(frames, idx)
+    return 0 if idx == 9
     if frames[idx].strike?
       calculate_strike_score(frames, idx)
     elsif frames[idx].spare?
@@ -43,11 +44,11 @@ class Game
   def calculate_score(frames)
     frames.each_with_index.sum do |frame, idx|
       point = frame.sum_scores
-      point += calculate_bonus(frames, idx) unless idx == 9
+      point += calculate_bonus(frames, idx)
       point
     end
   end
 end
 
-game_score = Game.new(ARGV[0])
-game_score.main
+game = Game.new(ARGV[0])
+game.calculate_result_score
