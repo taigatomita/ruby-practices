@@ -30,8 +30,8 @@ class Display
     divided_files.map { |f| f.values_at(0...number_of_columns) }.transpose
   end
 
-  def print_file_status(file_list)
-    file_list.each do |file_status|
+  def print_file_status(file_status_list)
+    file_status_list.each do |file_status|
       print("#{file_status[:file_type]}#{file_status[:file_mode]}  #{file_status[:number_of_hard_links]} ")
       print("#{file_status[:owner_name]}  #{file_status[:group_name]}  #{file_status[:byte_size]} #{file_status[:changed_times]} #{file_status[:file_name]}\n")
     end

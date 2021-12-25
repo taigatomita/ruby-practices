@@ -3,8 +3,6 @@
 require 'etc'
 
 class LongFileList
-  attr_reader :files
-
   PERMISSION_MARKS = [
     '---',
     '--x',
