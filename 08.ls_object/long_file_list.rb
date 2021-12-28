@@ -18,12 +18,15 @@ class LongFileList
     @files = files
   end
 
-  def calculate_total_block
-    @files.sum { |f| new_file_status(f).blocks }
+  def display
+    puts "total #{calculate_total_block(@files)}"
+    print_file_status(file_status_list(@files))
   end
 
-  def set_file_status_list
-    @files.map do |file|
+  private
+
+  def file_status_list(files)
+    files.map do |file|
       file_stat = new_file_status(file)
       {
         file_name: file,
@@ -38,13 +41,22 @@ class LongFileList
     end
   end
 
-  private
+  def print_file_status(file_status_list)
+    file_status_list.each do |file_status|
+      print("#{file_status[:file_type]}#{file_status[:file_mode]}  #{file_status[:number_of_hard_links]} ")
+      print("#{file_status[:owner_name]}  #{file_status[:group_name]}  #{file_status[:byte_size]} #{file_status[:changed_times]} #{file_status[:file_name]}\n")
+    end
+  end
 
   def new_file_status(file)
     File::Stat.new(file)
   end
 
   def convert_permission_status(filemode)
-    filemode.chars[-3..].map { |b| PERMISSION_MARKS[b.to_i] }.join
+    filemode.chars[-3..].map { |octal| PERMISSION_MARKS[octal.to_i] }.join
+  end
+
+  def calculate_total_block(files)
+    files.sum { |file| new_file_status(file).blocks }
   end
 end
