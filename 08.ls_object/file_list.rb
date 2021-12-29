@@ -10,8 +10,8 @@ class FileList
   def display
     file_column = transpose_matrix(@files)
     file_column.each do |file_name|
-      result = file_name.map { |string| string.to_s.ljust(max_number_of_chars(@files)) } # nilを空文字へ変換するためにto_sを使用
-      puts result.join('  ')
+      result = file_name.compact.map { |string| string.ljust(max_number_of_chars(@files)) }.join('  ')
+      puts result
     end
   end
 

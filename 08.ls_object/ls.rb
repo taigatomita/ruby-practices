@@ -12,7 +12,8 @@ class Ls
   def output
     files = @options['a'] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
     files = files.reverse if @options['r']
-    @options['l'] ? LongFileList.new(files).display : FileList.new(files).display
+    file_list = @options['l'] ? LongFileList.new(files) : FileList.new(files)
+    file_list.display
   end
 end
 

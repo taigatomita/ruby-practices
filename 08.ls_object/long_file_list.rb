@@ -16,20 +16,20 @@ class LongFileList
 
   def initialize(files)
     @files = files
+    @files_stat = files.map { |file| File::Stat.new(file) }
   end
 
   def display
-    puts "total #{calculate_total_block(@files)}"
-    print_file_status(file_status_list(@files))
+    puts "total #{@files_stat.sum(&:blocks)}"
+    print_file_status(file_status_list(@files, @files_stat))
   end
 
   private
 
-  def file_status_list(files)
-    files.map do |file|
-      file_stat = new_file_status(file)
+  def file_status_list(files, files_stat)
+    files_stat.map.with_index do |file_stat, index|
       {
-        file_name: file,
+        file_name: files[index],
         file_type: file_stat.ftype == 'file' ? '-' : file_stat.ftype.slice(0),
         file_mode: convert_permission_status(file_stat.mode.to_s(8)),
         number_of_hard_links: file_stat.nlink,
@@ -48,15 +48,7 @@ class LongFileList
     end
   end
 
-  def new_file_status(file)
-    File::Stat.new(file)
-  end
-
   def convert_permission_status(filemode)
     filemode.chars[-3..].map { |octal| PERMISSION_MARKS[octal.to_i] }.join
-  end
-
-  def calculate_total_block(files)
-    files.sum { |file| new_file_status(file).blocks }
   end
 end
